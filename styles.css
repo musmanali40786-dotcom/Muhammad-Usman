@@ -4,15 +4,15 @@
    ========================================================= */
 
 :root{
-  --paper:      #EDEBE3;
-  --paper-2:    #E4E1D6;
-  --white:      #FAF9F5;
+  --paper:      #E3E6E8;
+  --paper-2:    #D6DADD;
+  --white:      #F2F4F5;
   --ink:        #14304C;
   --ink-soft:   #3C5573;
-  --ink-faint:  #7C8A9A;
+  --ink-faint:  #7A8792;
   --steel:      #8B92A0;
-  --line:       #C9C4B4;
-  --line-soft:  #D9D6C9;
+  --line:       #B7BEC4;
+  --line-soft:  #CBD1D5;
   --brass:      #B8763E;
   --brass-dark: #935D2E;
 
@@ -36,14 +36,43 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
-/* subtle drafting-paper grid texture */
+/* brushed steel base: fine directional grain + a faint machined grid etched on top */
 body{
+  background-color: var(--paper);
   background-image:
+    repeating-linear-gradient(178deg,
+      rgba(255,255,255,0.55) 0px, rgba(255,255,255,0.55) 1px,
+      transparent 1px, transparent 2px),
+    repeating-linear-gradient(178deg,
+      rgba(15,35,55,0.045) 0px, rgba(15,35,55,0.045) 1px,
+      transparent 2px, transparent 4px),
+    repeating-linear-gradient(178deg,
+      rgba(15,35,55,0.03) 0px, rgba(15,35,55,0.03) 1px,
+      transparent 3px, transparent 7px),
     linear-gradient(var(--line-soft) 1px, transparent 1px),
-    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
-  background-size: 34px 34px;
-  background-position: -1px -1px;
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px),
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:
+    100% 2px, 100% 4px, 100% 7px,
+    20px 20px, 20px 20px, 100px 100px, 100px 100px;
+  background-position: 0 0, 0 0, 0 0, -1px -1px, -1px -1px, -1px -1px, -1px -1px;
 }
+
+/* soft diagonal sheen sweeping across the hero, like light catching a machined panel */
+.hero{ position:relative; }
+.hero::before{
+  content:"";
+  position:absolute; inset:0;
+  background:linear-gradient(115deg,
+    rgba(255,255,255,0) 12%,
+    rgba(255,255,255,0.75) 30%,
+    rgba(255,255,255,0.15) 42%,
+    rgba(255,255,255,0) 58%);
+  pointer-events:none;
+  z-index:0;
+}
+.hero > *{ position:relative; z-index:1; }
 
 @media (prefers-reduced-motion: reduce){
   html{ scroll-behavior:auto; }
@@ -207,8 +236,21 @@ p{ margin:0; }
 }
 
 /* ---------- generic section ---------- */
-.section{ padding:96px 0; }
-.section-muted{ background:var(--paper-2); }
+.section{ padding:96px 0; position:relative; overflow:hidden; }
+.section-muted{
+  background-color:var(--paper-2);
+  background-image:
+    repeating-linear-gradient(135deg, var(--line) 0px, var(--line) 1px, transparent 1px, transparent 14px);
+}
+.section-watermark{
+  position:absolute; top:-0.12em; right:var(--frame-margin);
+  font-family:var(--font-mono); font-weight:600;
+  font-size:min(22vw, 260px); line-height:1;
+  color:transparent; -webkit-text-stroke:1px var(--ink);
+  opacity:0.055; pointer-events:none; z-index:0; user-select:none;
+}
+.section > .sheet-frame{ position:relative; z-index:1; }
+@media (max-width:700px){ .section-watermark{ display:none; } }
 .section-eyebrow{
   font-family:var(--font-mono); font-size:0.78rem; letter-spacing:0.08em;
   text-transform:uppercase; color:var(--brass-dark); margin-bottom:10px;
@@ -221,10 +263,32 @@ p{ margin:0; }
 
 /* ---------- about ---------- */
 .about-grid{
-  display:grid; grid-template-columns:1fr 1fr; gap:40px;
+  display:grid; grid-template-columns:260px 1fr; gap:44px; align-items:start;
 }
-.about-text{ font-size:1.05rem; color:var(--ink-soft); max-width:52ch; }
-@media (max-width:760px){ .about-grid{ grid-template-columns:1fr; } }
+.about-photo-card{
+  margin:0; border:1px solid var(--ink); background:var(--white);
+  position:relative;
+}
+.about-photo-card::before{
+  content:"M.U."; position:absolute; top:8px; left:8px;
+  font-family:var(--font-mono); font-size:0.65rem; letter-spacing:0.06em;
+  color:var(--brass-dark); background:var(--white);
+  padding:2px 6px; border:1px solid var(--brass-dark); z-index:1;
+}
+.about-photo{
+  width:100%; aspect-ratio:3/4; object-fit:cover; display:block;
+}
+.about-caption{
+  font-family:var(--font-mono); font-size:0.78rem; line-height:1.55;
+  color:var(--ink-soft); padding:14px 14px 16px;
+  border-top:1px solid var(--line); margin:0;
+}
+.about-text-col{ display:flex; flex-direction:column; gap:22px; }
+.about-text{ font-size:1.05rem; color:var(--ink-soft); max-width:56ch; }
+@media (max-width:760px){
+  .about-grid{ grid-template-columns:1fr; }
+  .about-photo-card{ max-width:280px; }
+}
 
 /* ---------- skills ---------- */
 .skills-wrap{ display:grid; grid-template-columns:repeat(3, 1fr); gap:40px; }
@@ -278,6 +342,17 @@ p{ margin:0; }
   border:1px solid var(--ink);
   background:var(--white);
 }
+.project-visual-split{
+  position:relative;
+}
+.split-main{ width:100%; aspect-ratio:4/3; object-fit:cover; border:1px solid var(--ink); background:var(--white); }
+.split-sub{
+  position:absolute; bottom:-18px; right:-18px;
+  width:38%; aspect-ratio:16/9; object-fit:cover;
+  border:2px solid var(--paper); outline:1px solid var(--ink);
+  box-shadow:0 6px 18px rgba(20,48,76,0.25);
+}
+@media (max-width:520px){ .split-sub{ width:44%; bottom:-12px; right:-12px; } }
 .blueprint-placeholder{
   border:1px dashed var(--ink-faint);
   aspect-ratio:4/3;
